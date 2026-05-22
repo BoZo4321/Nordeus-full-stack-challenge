@@ -16,6 +16,9 @@ public class MoveManagementService {
     private static final int MAX_EQUIPPED = 4;
 
     public void updateEquippedMoves(RunState run, List<String> moveIds) {
+        if (moveIds.isEmpty()) {
+            throw new InvalidMoveException("Must equip at least 1 move.");
+        }
         if (moveIds.size() > MAX_EQUIPPED) {
             throw new InvalidMoveException(
                     "Cannot equip more than " + MAX_EQUIPPED + " moves."

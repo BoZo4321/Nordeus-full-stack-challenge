@@ -1,11 +1,7 @@
 package com.bozidar.rpg.service;
 
 import com.bozidar.rpg.dto.BattleReward;
-import com.bozidar.rpg.model.CharacterStats;
-import com.bozidar.rpg.model.EncounterStatus;
-import com.bozidar.rpg.model.HeroState;
-import com.bozidar.rpg.model.Move;
-import com.bozidar.rpg.model.RunState;
+import com.bozidar.rpg.model.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -60,7 +56,10 @@ public class RewardService {
                     e.setStatus(EncounterStatus.COMPLETED);
                     int nextIndex = e.getIndex() + 1;
                     if (nextIndex < run.getEncounters().size()) {
-                        run.getEncounters().get(nextIndex).setStatus(EncounterStatus.AVAILABLE);
+                        EncounterState next = run.getEncounters().get(nextIndex);
+                        if (next.getStatus() == EncounterStatus.LOCKED) {
+                            next.setStatus(EncounterStatus.AVAILABLE);
+                        }
                     }
                 });
 

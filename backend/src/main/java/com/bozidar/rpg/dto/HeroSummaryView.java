@@ -11,7 +11,6 @@ public record HeroSummaryView(
         String name,
         int level,
         int xp,
-        int currentHealth,
         CharacterStats stats,
         List<Move> equippedMoves,
         List<Move> learnedMoves
@@ -23,7 +22,6 @@ public record HeroSummaryView(
                 hero.getName(),
                 hero.getLevel(),
                 hero.getXp(),
-                stats.maxHealth(),
                 stats,
                 run.getEquippedMoves(),
                 run.getLearnedMoves()

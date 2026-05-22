@@ -159,10 +159,10 @@ public class BattleManager : MonoBehaviour
     {
         if (string.IsNullOrEmpty(line)) return;
         _log.Add(line);
-        if (_log.Count > 20) _log.RemoveAt(0);
+        if (_log.Count > 8) _log.RemoveAt(0);
         battleLogText.text = string.Join("\n", _log);
         Canvas.ForceUpdateCanvases();
-        if (battleLogScroll != null) battleLogScroll.verticalNormalizedPosition = 0f;
+        if (battleLogScroll != null) battleLogScroll.verticalNormalizedPosition = 1f;
     }
 
     private void SetMovesInteractable(bool value)

@@ -1,227 +1,120 @@
-# RPG Full Stack Application
+# RPG Full Stack Challenge — Nordeus Job Fair 2026
 
-This project is a full stack RPG application.
+A turn-based RPG where the player controls a knight fighting through a gauntlet of 5 monsters. Built as a Full Stack project — Unity frontend and Spring Boot backend with PostgreSQL.
 
-The backend is currently completed and implemented in **Java Spring Boot**.
+---
 
-The frontend is still in development because it is being built in **Unity** and will be added as soon as it is finished.
+## Technologies
 
-## Current Project Status
+- **Frontend:** Unity 6 (C#) — Standalone Windows application
+- **Backend:** Java Spring Boot
+- **Database:** PostgreSQL 16
+- **Containerization:** Docker / Docker Compose
 
-- Backend: completed and working
-- Database: PostgreSQL running in Docker
-- Frontend: in development with Unity
-- Final goal: backend, frontend, and database will all be fully Dockerized together
+---
 
-## Project Structure
+## Running the Project
 
-```text
-backend/
-  rpg-backend/
-    src/main/java/com/bozidar/rpg/RpgBackendApplication.java
-frontend/
-```
+### Prerequisites
 
-The Spring Boot application main class is located at:
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running
+- Windows OS (for the .exe frontend)
 
-```text
-backend/rpg-backend/src/main/java/com/bozidar/rpg/RpgBackendApplication.java
-```
-
-## Requirements
-
-To run the application, Docker must be installed and running.
-
-The PostgreSQL database is started through Docker Compose.
-
-## Running the Application
-
-From the project root folder, go to the backend folder:
+### 1. Start the backend and database
 
 ```bash
-cd backend/rpg-backend
+cd backend
+docker compose up --build
 ```
 
-Start PostgreSQL with Docker Compose:
+This will start:
+- PostgreSQL database on port `5432`
+- Spring Boot backend on port `8080`
+
+The backend is ready when you see:
+```
+Started RpgBackendApplication
+```
+
+### 2. Start the frontend
+
+Download the `.exe` from [GitHub Releases](../../releases) and run `RpgGame.exe`.
+
+> **Note:** The backend must be running before launching the game.
+
+### Shutdown
 
 ```bash
-docker-compose up --build
+docker compose down
 ```
 
-Then run the Spring Boot backend application from the main application class in the IDE:
-
-```text
-backend/rpg-backend/src/main/java/com/bozidar/rpg/RpgBackendApplication.java
-```
-
-Alternatively, from the `backend/rpg-backend` folder, the backend can be started with Maven:
+Database data is preserved between sessions. To wipe all data:
 
 ```bash
-mvn spring-boot:run
+docker compose down -v
 ```
 
-The backend runs on:
+---
 
-```text
-http://localhost:8080
-```
+## How to Play
 
-## Backend API Endpoints
+### Main Menu
+- **Start** — begin a new run
+- **Exit** — quit the game
 
-### Health Check
+### Map Screen
+- Shows all 5 monsters to defeat in order
+- Click an encounter to start a battle
+- **Choose Moves** opens the Move Management screen to swap equipped moves
+- Defeated monsters can be challenged again for XP and move farming
 
-```http
-GET /api/health
-```
+### Battle Screen
+- Hero and monster take turns using moves
+- Choose one of your 4 equipped moves each turn
+- HP bars show the current state of both combatants
+- Battle log tracks everything that happens in the fight
+- **Hover** over a move to see its tooltip description
 
-Example response:
+### Post Battle
+- **Victory:** Earn XP and learn a random move from the defeated monster
+- **Defeat:** Retry the fight or return to the map
 
-```json
-{
-  "status": "UP",
-  "message": "RPG backend is running"
-}
-```
+### Progression
+- Every battle awards XP
+- At 100 XP the hero levels up — Attack, Defense, Health and Magic all increase
+- Learned moves are available in the Move Management screen before the next fight
 
-### Start New Run
+---
 
-```http
-POST /api/runs
-```
+## Game Systems
 
-No request body is required.
+### Stats
+| Stat | Description |
+|------|-------------|
+| Health | Hit points — reaching 0 means defeat |
+| Attack | Scales physical damage moves |
+| Defense | Reduces incoming physical damage |
+| Magic | Scales magic damage and healing |
 
-### Get Run By ID
+### Move Types
+- **Physical** — scales with Attack, reduced by target's Defense
+- **Magic** — scales with Magic, bypasses Defense entirely
+- **Support** — buffs, debuffs, healing
 
-```http
-GET /api/runs/{runId}
-```
+### Monsters (in order)
+1. Goblin Warrior
+2. Giant Spider
+3. Goblin Mage
+4. Witch
+5. Dragon
 
-### Start Battle
+---
 
-```http
-POST /api/runs/{runId}/battles
-Content-Type: application/json
-```
+## Building the Frontend (for developers)
 
-Example request:
+If you want to build the frontend yourself:
 
-```json
-{
-  "monsterId": "goblin_warrior"
-}
-```
-
-### Play Turn
-
-```http
-POST /api/battles/{battleId}/turns
-Content-Type: application/json
-```
-
-Example request:
-
-```json
-{
-  "moveId": "slash"
-}
-```
-
-Available hero moves:
-
-```text
-slash
-shield_up
-battle_cry
-second_wind
-```
-
-### Equip Hero Moves
-
-```http
-PUT /api/runs/{runId}/hero/moves
-Content-Type: application/json
-```
-
-Example request:
-
-```json
-{
-  "moveIds": ["slash", "shield_up", "battle_cry", "second_wind"]
-}
-```
-
-## Example Test Flow
-
-### 1. Check Backend Health
-
-```http
-GET /api/health
-```
-
-### 2. Create a New Run
-
-```http
-POST /api/runs
-```
-
-Save the returned `runId`.
-
-### 3. Start a Battle
-
-```http
-POST /api/runs/{runId}/battles
-Content-Type: application/json
-```
-
-```json
-{
-  "monsterId": "goblin_warrior"
-}
-```
-
-Save the returned `battleId`.
-
-### 4. Play Turns Until the Battle Is Finished
-
-```http
-POST /api/battles/{battleId}/turns
-Content-Type: application/json
-```
-
-```json
-{
-  "moveId": "slash"
-}
-```
-
-### 5. Check Updated Run State
-
-```http
-GET /api/runs/{runId}
-```
-
-### 6. Equip Learned Moves
-
-```http
-PUT /api/runs/{runId}/hero/moves
-Content-Type: application/json
-```
-
-```json
-{
-  "moveIds": ["slash", "shield_up", "battle_cry", "frenzy"]
-}
-```
-
-## Frontend
-
-The frontend is currently being developed in Unity.
-
-It will be added to the repository and connected with the backend as soon as it is completed.
-
-## Notes
-
-At the moment, the backend and database are the main working parts of the application.
-
-The final version of the project will include a Unity frontend connected to the Spring Boot backend, with the full application prepared for Docker-based execution.
+1. Install [Unity 6](https://unity.com/download) with the **Windows Build Support** module
+2. Open the `frontend/` folder as a Unity project
+3. **File → Build Profiles → Windows → Build**
+4. Run the generated `.exe`
